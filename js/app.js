@@ -1,4 +1,35 @@
 $(function(){
+    
+    var queriesTotalSpan=$("#totalNum");
+    var queriesSuccessfulSpan=$("#successfulNum");
+    
+    function totalQueriesCounter(){
+        var strTotalCounter=localStorage.getItem("totalCounter");
+        if(strTotalCounter===null || strTotalCounter==="null"){
+            var totalCounter=0;
+        }
+        else{
+            totalCounter=parseInt(strTotalCounter);
+        }
+        totalCounter++;
+        queriesTotalSpan.text(totalCounter);
+        localStorage.setItem("totalCounter", totalCounter);
+    }
+    
+    function successfulQueriesCounter(){
+        var strSuccessfulCounter=localStorage.getItem("successfullCounter");
+        if(strSuccessfulCounter===null || strSuccessfulCounter==="null"){
+            var successfullCounter=0;
+        }
+        else{
+            successfullCounter=parseInt(strSuccessfulCounter);
+        }
+        successfullCounter++;
+        queriesSuccessfulSpan.text(successfullCounter);
+        localStorage.setItem("successfullCounter", successfullCounter);
+    }
+    
+    
     //funkcja wczytująca wszystkie książki i wypisująca je na stronie
     var loadAllBooks = function(){
         var bookList = $("#listWithBooks");
@@ -8,6 +39,7 @@ $(function(){
             dataType: "JSON"
         }).done(function(bookNamesArray){
             bookList.empty();
+            successfulQueriesCounter();
             for(var i = 0; i < bookNamesArray.length; i++){
                 var newLi = $("<li>");
                 var removeButton = $('<button class="delbtn">Delete</button>');
@@ -20,6 +52,8 @@ $(function(){
             }
         }).fail(function(xhr, status, error){
             console.log("Load all books ajax failed");
+        }).always(function(){
+            totalQueriesCounter();
         });
     };
     
@@ -42,9 +76,12 @@ $(function(){
            button.addClass("hidebtn");
            var editForm=$("<form id='editBook' method='POST' action='#' style='display:inline-block'><fieldset><legend>New book:</legend><p><input type='text' name='newTitle' maxlength='255' placeholder='Edit title'></p><p><input type='text' name='newAuthor' maxlength='255' placeholder='Edit author'></p><p><textarea type='text' name='newDescription' placeholder='Edit description'></textarea></p><p><input type='submit' value='submit'></p></filedset></form>");
            newDiv.append(editForm);
+           successfulQueriesCounter();
        }).fail(function(xhr, status, error){
            console.log("Ajax failed when reading book with id" + bookId);
-       });
+       }).always(function(){
+            totalQueriesCounter();
+        });
     });
     
     //do przycisków z klasą hidebtn dodano onclick event chowający diva z opisem książki
@@ -74,9 +111,12 @@ $(function(){
                 form.find("input").eq(1).prop("value", "");
                 form.find("textarea").prop("value", "");
                 loadAllBooks();
+                successfulQueriesCounter();
             }
         }).fail(function(xhr, status, error){
             console.log("Ajax faild when submiting new book");
+        }).always(function(){
+            totalQueriesCounter();
         });
     });
     
@@ -91,9 +131,12 @@ $(function(){
         }).done(function(json){
             if(json['status']==="success"){
                 loadAllBooks();
+                successfulQueriesCounter();
             }
         }).fail(function(xhr, status, error){
             console.log("Ajax faild when deleting book with id="+bookId);
+        }).always(function(){
+            totalQueriesCounter();
         });
     });
     
@@ -101,10 +144,7 @@ $(function(){
         event.preventDefault();
         var editForm=$(this);
         var bookId = editForm.parent().parent().data("id");
-        var editData=editForm.serialize();
-        console.log(editData);
-        console.log("id="+bookId+"&"+editData)
-        
+        var editData=editForm.serialize(); 
         
         $.ajax({
             url: "http://192.168.33.22/REST_bookshelf/api/books.php",
@@ -114,13 +154,18 @@ $(function(){
         }).done(function(json){
             if(json['status']==="success"){
                 loadAllBooks();
+                successfulQueriesCounter();
             }
         }).fail(function(xhr, status, error){
             console.log("Ajax faild during editing book with id="+bookId);
+        }).always(function(){
+            totalQueriesCounter();
         });
     });
     
+    
     loadAllBooks();
+    
 
 });
 
