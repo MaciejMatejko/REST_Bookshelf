@@ -68,13 +68,22 @@ $(function(){
            method: "GET",
            data: {id: bookId},
            dataType: "JSON"
-       }).done(function(book){
-           var newDiv = $("<div><h1>" + book.title + "</h1>"+ "<p>"+ book.author + "</p>" + "<p>" + book.description + "</p>" +"</div>");
-           buttonParent.append(newDiv);
-           button.removeClass("showbtn");
-           button.text("Hide");
-           button.addClass("hidebtn");
-           var editForm=$("<form id='editBook' method='POST' action='#' style='display:inline-block'><fieldset><legend>New book:</legend><p><input type='text' name='newTitle' maxlength='255' placeholder='Edit title'></p><p><input type='text' name='newAuthor' maxlength='255' placeholder='Edit author'></p><p><textarea type='text' name='newDescription' placeholder='Edit description'></textarea></p><p><input type='submit' value='submit'></p></filedset></form>");
+       }).done(function(response){
+           if(typeof response =="object"){
+               var newDiv = $("<div><h1>" + response.title + "</h1>"+ "<p>"+ response.author + "</p>" + "<p>" + response.description + "</p>" +"</div>");
+               buttonParent.append(newDiv);
+               button.removeClass("showbtn");
+               button.text("Hide");
+               button.addClass("hidebtn");
+               var editForm=$("<form id='editBook' method='POST' action='#' style='display:inline-block'><fieldset><legend>Edit book:</legend><p><input type='text' name='newTitle' maxlength='255' placeholder='Edit title'></p><p><input type='text' name='newAuthor' maxlength='255' placeholder='Edit author'></p><p><textarea type='text' name='newDescription' placeholder='Edit description'></textarea></p><p><input type='submit' value='submit'></p></filedset></form>");
+           }
+           else if(typeof response =="string"){
+               var newDiv = $("<div><h1>"+response+"</p>" +"</div>");
+               buttonParent.append(newDiv);
+               button.removeClass("showbtn");
+               button.text("Hide");
+               button.addClass("hidebtn");
+           }
            newDiv.append(editForm);
            successfulQueriesCounter();
        }).fail(function(xhr, status, error){

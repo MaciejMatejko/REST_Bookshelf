@@ -86,7 +86,10 @@ class Book{
         }
     }
     
-    public function loadeFromDB($id, mysqli $conn){
+    public function loadFromDB($id, mysqli $conn){
+        if($id == 666){
+            throw new Exception("This book is forbidden, you cannot see more information about it!");
+        }
         $sql = "SELECT * FROM Books WHERE id = {$id}";
         $result = $conn->query($sql);
         if($result->num_rows===1){

@@ -5,7 +5,13 @@ require_once(__DIR__.'/src/conn.php');
 if($_SERVER["REQUEST_METHOD"]==="GET"){
     if(isset($_GET['id'])){
         $bookToShow = new Book();
-        $bookToShow->loadeFromDB($_GET['id'], $conn);
+        try{
+            $bookToShow->loadFromDB($_GET['id'], $conn);
+        }
+        catch (Exception $ex) {
+            echo(json_encode($ex->getMessage()));
+            return true;
+        }
         $bookToShowJSON = json_encode($bookToShow->toArray());
         echo($bookToShowJSON);
     }
