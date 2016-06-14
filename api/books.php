@@ -10,7 +10,7 @@ if($_SERVER["REQUEST_METHOD"]==="GET"){
         }
         catch (Exception $ex) {
             echo(json_encode($ex->getMessage()));
-            return true;
+            exit;
         }
         $bookToShowJSON = json_encode($bookToShow->toArray());
         echo($bookToShowJSON);
